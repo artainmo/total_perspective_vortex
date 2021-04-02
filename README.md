@@ -14,7 +14,9 @@ Is an unsupervised learning technique. That can also be used to pre-process data
 
 Dimensionality reduction seeks a lower-dimensional representation of numerical input data that preserves the salient(most important) relationships in the data. This allows for a reduced number of parameters in your supervised learing model, simpler models are desirable.
 
-### Pipeline object form scikit-learn:
+### ML Pipeline:
+
+ML workflows include data preparation, training and evaluation. ML pipelines automate the ML wworkflow and can be re-used on different datas to train or predict. Making the AI more reproducible.
 
 ###Real time data stream classification: 
 
