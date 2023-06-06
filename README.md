@@ -70,3 +70,4 @@ Principal component analysis, most popular technique in dimensionality reduction
 
 https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python
 
+# total_perspective_vortex
