@@ -1,10 +1,10 @@
-# Subject
+# total_perspective_vortex
 
-https://cdn.intra.42.fr/pdf/pdf/13336/en.subject.pdf
+42 school [subject](https://cdn.intra.42.fr/pdf/pdf/86321/en.subject.pdf).
 
 Focus on dimensionality reduction algorithm to pre-process data before classification using scikit-learn.
 
-# Preliminary Notions
+## Preliminary Notions
 
 ### EEG datas:
 
@@ -12,7 +12,7 @@ Brainwaves, from voltage fluctuations between neurons.
 
 ### ML Pipeline:
 
-ML workflows include data preparation, training and evaluation. ML pipelines automate the ML wworkflow and can be re-used on different datas to train or predict. Making the AI more reproducible.
+ML workflows include data preparation, training and evaluation. ML pipelines automate the ML workflow and can be re-used on different datas to train or predict. Making the AI more reproducible.
 
 ### Real time data stream classification: 
 
@@ -26,7 +26,7 @@ Python package to handle EEG datas.
 
 Python package for machine learning. In comparison to tensorflow it is higher level, while tensorflow is lower level, thus tensorflow allows for more customization and is often preferable for deep learning.
 
-# ML pipeline structure
+## ML pipeline structure
 
 ### Data processing
 
@@ -63,11 +63,6 @@ In simple terms, it reduces the mumber of input variables in a predictive model.
 
 Principal component analysis, most popular technique in dimensionality reduction, used to preprocess data, comes from linear algebra.
 
-
-####
-
 # Resources
 
 https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python
-
-# total_perspective_vortex
