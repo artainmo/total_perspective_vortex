@@ -2,7 +2,7 @@
 
 42 school [subject](https://cdn.intra.42.fr/pdf/pdf/86321/en.subject.pdf).
 
-Focus on dimensionality reduction algorithm to pre-process data before classification using scikit-learn.
+Create a machine-learning pipeline that implements a dimensionality reduction algorithm to pre-process data before classification using scikit-learn.
 
 ## Preliminary Notions
 
