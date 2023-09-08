@@ -55,7 +55,7 @@ Decomposes a function into wavelets. A wavelet is a wave-like oscillation that i
 
 Is an unsupervised learning technique. That can also be used to pre-process data for supervised learning after cleaning the data and normalizing it. Different dimensionality reduction algorithms exist, no method is superior it depends on dataset and must be tested. They have to be fit and evaluated as well on training and test set.
 
-Dimensionality reduction seeks a lower-dimensional representation of numerical input data that preserves the salient(most important) relationships in the data. This allows for a reduced number of parameters in your supervised learing model, simpler models are desirable.
+Dimensionality reduction seeks a lower-dimensional representation of numerical input data that preserves the salient relationships in the data. This allows for a reduced number of parameters in your supervised learning model, simpler models are desirable.
 
 In simple terms, it reduces the mumber of input variables in a predictive model. This leads to improved performance of predictive model.
 
