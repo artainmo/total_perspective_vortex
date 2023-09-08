@@ -6,15 +6,15 @@ Create a machine-learning pipeline that implements a dimensionality reduction al
 
 ## Preliminary Notions
 
-### EEG datas:
+### EEG datas
 
 Brainwaves, from voltage fluctuations between neurons.
 
-### ML Pipeline:
+### ML Pipeline
 
 ML workflows include data preparation, training and evaluation. ML pipelines automate the ML workflow and can be re-used on different datas to train or predict. Making the AI more reproducible.
 
-### Real time data stream classification: 
+### Real time data stream classification
 
 Consists of a classifier that is trained in real time on incoming data and able to drift (adapt in real time), to stay accurate over time.
 
