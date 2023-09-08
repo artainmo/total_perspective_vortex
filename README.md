@@ -65,4 +65,4 @@ Principal component analysis, most popular technique in dimensionality reduction
 
 # Resources
 
-https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python
+[6 Dimensionality Reduction Algorithms With Python](https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python)
