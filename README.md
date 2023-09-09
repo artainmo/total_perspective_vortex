@@ -2,7 +2,7 @@
 
 42 school [subject](https://cdn.intra.42.fr/pdf/pdf/86321/en.subject.pdf).
 
-Create a machine-learning pipeline that implements a dimensionality reduction algorithm to pre-process data before classification using scikit-learn.
+Process EEG datas by parsing, formating, creating a pipeline implementing a dimensionality reduction algorithm before classifying and handling a real time datastream with scikit-learn.
 
 ## Preliminary Notions
 
@@ -68,6 +68,11 @@ It uses simple matrix operations from linear algebra and statistics to lower the
 
 Singular value decomposition is most often used when data is sparse, meaning it contains many zero values.<br>
 This dimensionality reduction method uses matrix decomposition also known as matrix factorization which reduces a matrix to its constituent parts.
+
+###### CSP
+
+Common spatial patterns is the most used dimensionality reduction algorithm when handling EEG datas.<br>
+It is used in signal processing, such as EEG signals, to find the most salient patterns in the data thus putting a spot light on the input datas with most predictive value.
 
 # Resources
 
