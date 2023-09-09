@@ -61,8 +61,17 @@ In simple terms, it reduces the mumber of input variables in a predictive model.
 
 ###### PCA
 
-Principal component analysis, most popular technique in dimensionality reduction, used to preprocess data, comes from linear algebra.
+Principal component analysis is the most popular technique in dimensionality reduction when data is dense, meaning the data contains few zero values.<br>
+It uses simple matrix operations from linear algebra and statistics to lower the dimensionality of the dataset.
+
+###### SVD
+
+Singular value decomposition is most often used when data is sparse, meaning it contains many zero values.<br>
+This dimensionality reduction method uses matrix decomposition also known as matrix factorization which reduces a matrix to its constituent parts.
 
 # Resources
 
-[6 Dimensionality Reduction Algorithms With Python](https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python)
+[6 Dimensionality Reduction Algorithms With Python](https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python)<br>
+[How to Calculate Principal Component Analysis (PCA) from Scratch in Python](https://machinelearningmastery.com/calculate-principal-component-analysis-scratch-python/)<br>
+[How to Calculate the SVD from Scratch with Python](https://machinelearningmastery.com/singular-value-decomposition-for-machine-learning/)<br>
+
