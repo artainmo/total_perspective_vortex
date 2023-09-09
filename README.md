@@ -36,18 +36,17 @@ Visualize the data and filter out features with no predictive power for the desi
 
 ##### Signal spectrum
 
-Signal spectrum is the range of frequencies found in a signal
+Signal spectrum is the range of frequencies found in a signal.
 
 ##### Fourier transform
 
-Is an integral transformation that decomposes signals into its constituent components and frequencies. It is capable of decomposing complicated waveforms into a sequence of simpler waves.
-(Integral of a function is the inverse of the derivation of a function. While derivatives find slope of function, integral find volume under function curve.)
+Is an integral transformation that decomposes signals into its constituent components and frequencies. It is capable of decomposing complicated waveforms into a sequence of simpler waves.<br>
+Integral of a function is the inverse of the derivation of a function. While derivatives find slope of function, integral find volume under function curve.
 
 ##### Wavelet transform
 
-The Fourier transform captures global frequency information, this decomposition can generalize too much and be less precise depending on signals. Wavelet transform resolves this problem by allowing to extract local spectras.
-
-Decomposes a function into wavelets. A wavelet is a wave-like oscillation that is localized in time, consists of two properties, scale and location. 
+The Fourier transform captures global frequency information, this decomposition can generalize too much and be less precise depending on signals. Wavelet transform resolves this problem by allowing to extract local spectras.<br>
+Wavelet transform decomposes a function into wavelets. A wavelet is a wave-like oscillation that is localized in time, consists of two properties, scale and location. 
 
 #### Processing 
 
