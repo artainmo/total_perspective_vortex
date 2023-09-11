@@ -56,7 +56,7 @@ Is an unsupervised learning technique. That can also be used to pre-process data
 
 Dimensionality reduction seeks a lower-dimensional representation of numerical input data that preserves the salient relationships in the data. This allows for a reduced number of parameters in your supervised learning model, simpler models are desirable.
 
-In simple terms, it reduces the mumber of input variables in a predictive model. This leads to improved performance of predictive model.
+In simple terms, it reduces the number of input variables in a predictive model by eliminating input variables with no predictive power. This leads to improved performance of predictive model.
 
 ###### PCA
 
