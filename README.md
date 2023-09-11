@@ -24,7 +24,7 @@ Python package to handle EEG datas.
 
 ### scikit-learn
 
-Python package for machine learning. In comparison to tensorflow it is higher level, while tensorflow is lower level, thus tensorflow allows for more customization and is often preferable for deep learning.
+Python package for machine learning also called sklearn. In comparison to tensorflow it is higher level, while tensorflow is lower level, thus tensorflow allows for more customization and is often preferable for deep learning.
 
 ## ML pipeline structure
 
@@ -73,9 +73,20 @@ This dimensionality reduction method uses matrix decomposition also known as mat
 Common spatial patterns is the most used dimensionality reduction algorithm when handling EEG datas.<br>
 It is used in signal processing, such as EEG signals, to find the most salient patterns in the data thus putting a spot light on the input datas with most predictive value.
 
+### Model training
+
+To train the model first split the data into a test set and training set. The model will be trained on training set and validated on test set to verify against overfitting.
+
+### Deployment
+
+The final stage is applying the ML model to the production area. So, basically the end user can use it to get the predictions generated on the live data.<br>
+Here, real time data stream classification can also be applied so that the model can keep learning in real time.
+
 # Resources
 
 [6 Dimensionality Reduction Algorithms With Python](https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python)<br>
 [How to Calculate Principal Component Analysis (PCA) from Scratch in Python](https://machinelearningmastery.com/calculate-principal-component-analysis-scratch-python/)<br>
 [How to Calculate the SVD from Scratch with Python](https://machinelearningmastery.com/singular-value-decomposition-for-machine-learning/)<br>
+[Machine Learning Pipeline: Architecture of ML Platform in Production](https://www.altexsoft.com/blog/machine-learning-pipeline/)<br>
+
 
