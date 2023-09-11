@@ -2,7 +2,7 @@
 
 42 school [subject](https://cdn.intra.42.fr/pdf/pdf/86321/en.subject.pdf).
 
-Process EEG datas by parsing, formating, creating a pipeline implementing a dimensionality reduction algorithm before classifying and handling a real time datastream with scikit-learn.
+Process EEG datas by parsing, formating, creating a ML pipeline implementing a dimensionality reduction algorithm before classifying and handling a real time datastream with scikit-learn.
 
 ## Preliminary Notions
 
