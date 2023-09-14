@@ -76,7 +76,7 @@ This dimensionality reduction method uses matrix decomposition also known as mat
 ###### CSP
 
 Common spatial patterns is the most used dimensionality reduction algorithm when handling EEG datas.<br>
-It is used in signal processing, such as EEG signals, to find the most salient patterns in the data thus putting a spot light on the input datas with most predictive value.
+It is used in signal processing, such as EEG signals, to find the most salient patterns in the data thus putting a spotlight on the input datas with most predictive value.
 
 ### Model training
 
