@@ -36,7 +36,7 @@ Parse the data. In this case for EEG use the specialized python library called [
 Visualize the data and remove features with no predictive power for the desired output. Basically do [general data preparation](https://github.com/artainmo/neural-networks/tree/main#data-preparation--visualization).
 
 Extract new features from the data.<br>
-For example in the case of EEGs use the power of the signal by frequency.<br>
+For example in the case of EEGs use the power of the signal by frequency and channels/electrodes.<br>
 Or use the [signal's spectrum](#Signal-spectrum) and find it using an algorithm like [fourier transform](#Fourier-transform) or [wavelet transform](#Wavelet-transform).
 
 ##### Signal spectrum
@@ -58,7 +58,7 @@ Wavelet transform decomposes a function into wavelets. A wavelet is a wave-like 
 ##### Dimensionality reduction algorithm: 
 
 Is an unsupervised learning technique. That can also be used to pre-process data for supervised learning after cleaning the data and normalizing it.<br>
-Different dimensionality reduction algorithms exist, no method is superior, it depends on dataset and must be tested. They have to be fit and evaluated on both training and test set.
+Different dimensionality reduction algorithms exist, no method is superior, it depends on dataset and must be tested. They have to be used on both training and test set.
 
 Dimensionality reduction seeks a lower-dimensional representation of numerical input data that preserves the salient relationships in the data. This allows for a reduced number of parameters in your supervised learning model.<br>
 In simple terms, it reduces the number of input variables in a predictive model by eliminating input variables with no predictive power. This leads to lower computational cost and improved performance of the predictive model.
@@ -80,7 +80,8 @@ It is used in signal processing, such as EEG signals, to find the most salient p
 
 ### Model training
 
-To train the model first split the data into a test set and training set. The model will be trained on training set and validated on test set to verify against overfitting.
+To train the model first [split the data](https://github.com/artainmo/neural-networks/tree/main#data-splitting) into a training, validation and test set.<br>
+Research and find the best sklearn classification algorithm for this project. 
 
 ### Deployment
 
