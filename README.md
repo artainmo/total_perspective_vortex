@@ -31,9 +31,13 @@ Python package for machine learning also called sklearn. In comparison to tensor
 ### Data processing
 
 #### Preprocessing
+Parse the data. In this case for EEG use the specialized python library called [MNE](#MNE).<br>
 
-Visualize the data and remove features with no predictive power for the desired output. Basically do [general data preparation](https://github.com/artainmo/neural-networks/tree/main#data-preparation--visualization).<br> 
-Filter the data using an algorithm like fourier transform or wavelet transform.
+Visualize the data and remove features with no predictive power for the desired output. Basically do [general data preparation](https://github.com/artainmo/neural-networks/tree/main#data-preparation--visualization).
+
+Extract new features from the data.<br>
+For example in the case of EEGs use the power of the signal by frequency.<br>
+Or use the [signal's spectrum](#Signal-spectrum) and find it using an algorithm like [fourier transform](#Fourier-transform) or [wavelet transform](#Wavelet-transform).
 
 ##### Signal spectrum
 
