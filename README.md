@@ -32,7 +32,8 @@ Python package for machine learning also called sklearn. In comparison to tensor
 
 #### Preprocessing
 
-Visualize the data and filter out features with no predictive power for the desired output. Most filtering algorithms use fourier transform or wavelet transform.
+Visualize the data and remove features with no predictive power for the desired output. Basically do [general data preparation](https://github.com/artainmo/neural-networks/tree/main#data-preparation--visualization).<br> 
+Filter the data using an algorithm like fourier transform or wavelet transform.
 
 ##### Signal spectrum
 
@@ -52,11 +53,11 @@ Wavelet transform decomposes a function into wavelets. A wavelet is a wave-like 
 
 ##### Dimensionality reduction algorithm: 
 
-Is an unsupervised learning technique. That can also be used to pre-process data for supervised learning after cleaning the data and normalizing it. Different dimensionality reduction algorithms exist, no method is superior it depends on dataset and must be tested. They have to be fit and evaluated as well on training and test set.
+Is an unsupervised learning technique. That can also be used to pre-process data for supervised learning after cleaning the data and normalizing it.<br>
+Different dimensionality reduction algorithms exist, no method is superior, it depends on dataset and must be tested. They have to be fit and evaluated on both training and test set.
 
-Dimensionality reduction seeks a lower-dimensional representation of numerical input data that preserves the salient relationships in the data. This allows for a reduced number of parameters in your supervised learning model, simpler models are desirable.
-
-In simple terms, it reduces the number of input variables in a predictive model by eliminating input variables with no predictive power. This leads to improved performance of predictive model.
+Dimensionality reduction seeks a lower-dimensional representation of numerical input data that preserves the salient relationships in the data. This allows for a reduced number of parameters in your supervised learning model.<br>
+In simple terms, it reduces the number of input variables in a predictive model by eliminating input variables with no predictive power. This leads to lower computational cost and improved performance of the predictive model.
 
 ###### PCA
 
@@ -79,8 +80,8 @@ To train the model first split the data into a test set and training set. The mo
 
 ### Deployment
 
-The final stage is applying the ML model to the production area. So, basically the end user can use it to get the predictions generated on the live data.<br>
-Here, real time data stream classification can also be applied so that the model can keep learning in real time.
+The final stage is applying the ML model to the production area allowing users to get pedictions on live data.<br>
+Here, [real time data stream classification](#Real-time-data-stream-classification) can also be applied so that the model can keep learning in real time.
 
 # Resources
 
