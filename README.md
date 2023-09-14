@@ -22,6 +22,10 @@ Consists of a classifier that is trained in real time on incoming data and able 
 
 Python package to handle EEG datas.
 
+### PhysioNet
+[PhysioNet](https://physionet.org/) is an online repository of freely-available medical research data, managed by the MIT Laboratory for Computational Physiology.<br>
+We will use a dataset of EEGs related to motor movements, found [here](https://physionet.org/content/eegmmidb/1.0.0/).
+
 ### scikit-learn
 
 Python package for machine learning also called sklearn. In comparison to tensorflow it is higher level, while tensorflow is lower level, thus tensorflow allows for more customization and is often preferable for deep learning.
