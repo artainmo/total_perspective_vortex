@@ -24,7 +24,7 @@ Python package to handle EEG datas.
 
 ### PhysioNet
 [PhysioNet](https://physionet.org/) is an online repository of freely-available medical research data, managed by the MIT Laboratory for Computational Physiology.<br>
-We will use a dataset of EEGs related to motor movements, found [here](https://physionet.org/content/eegmmidb/1.0.0/).
+We will use a dataset of EEGs related to motor movements, found and explained [here](https://physionet.org/content/eegmmidb/1.0.0/).
 
 ### scikit-learn
 
