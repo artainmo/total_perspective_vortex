@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use('TkAgg') #To work on macos monterey
 import matplotlib.pyplot as plt
 from libs.NeuralNetworkLib.manipulate_data import normalization_zscore
+import numpy as np
 
 # Download datasets
 # Learn more about datasets (https://physionet.org/content/eegmmidb/1.0.0/, 
@@ -32,7 +33,7 @@ g_freq_bands = {
     'theta': (4, 8),
     'alpha': (8, 12),
     'beta': (12, 30),
-    'gamma': (30, 40)
+    'gamma': (30, 79)
 }
 def filter_frequency_bands(raw_data, freq_bands = g_freq_bands):
     filtered_data = {}
@@ -61,6 +62,27 @@ def visualize_filtered_frequency_bands_data(filtered_data, annotations):
     plt.tight_layout()
     plt.show()
 
+def annot_time_to_rawData_time(time_in_sec):
+    return int(time_in_sec * 160) #160 EEG measurements are made per second...
+
+def frequency_bands_data_per_state(datas, annotations):
+    ret = {}
+    for key in datas.keys():
+        for annot in annotations:
+            start = annot_time_to_rawData_time(annot['onset'])
+            end = annot_time_to_rawData_time(annot['onset'] + annot['duration'])
+            print(f'{annot["onset"]}->{annot["duration"]}')
+            print(f'{start}:{end}')
+            if key not in ret:
+                ret[key] = [datas[key][start:end]]
+            else:
+                ret[key].append(datas[key][start:end])
+    return ret
+# Returns dict of frequency-bands each containing a 3D numpy array of each state in time 
+# containing associated measurements of each channel/electrode.
+# Thus it has shape (30, +-672, 64) with 30 referring to 30 states over the 2min time period, 
+# +-672 measurements made over each +-4.1 seconds (time of each state) for each of the 64 channels.
+
 if __name__ == "__main__":
     raw_data, annotations = get_data()
     if len(sys.argv) > 1 and sys.argv[1] == "-v":
@@ -74,6 +96,9 @@ if __name__ == "__main__":
     del filtered_frequency_bands_data['beta']
     if len(sys.argv) > 1 and sys.argv[1] == "-v":
         visualize_filtered_frequency_bands_data(filtered_frequency_bands_data, annotations)
-    for annotation in annotations:
-        print(annotation)
-
+    data_per_state = frequency_bands_data_per_state(filtered_frequency_bands_data, annotations)
+    print(len(data_per_state['alpha']))
+    print(len(data_per_state['alpha'][0]))
+    print(len(data_per_state['alpha'][0][0]))
+    print(len(data_per_state['alpha'][0][0][0]))
+    
