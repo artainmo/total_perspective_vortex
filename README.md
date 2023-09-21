@@ -45,7 +45,7 @@ To do that find the [signal spectrum](#Signal-spectrum) using an algorithm like 
 
 ##### Signal spectrum
 
-Signal spectrum is the range of frequencies found in a signal.
+The signal spectrum describes a signal's magnitude and phase characteristics as a function of frequency.
 
 ##### Fourier transform
 
