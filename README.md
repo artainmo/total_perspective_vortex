@@ -41,7 +41,7 @@ Visualize the data and remove features with no predictive power for the desired 
 
 Extract new features from the data.<br>
 For example in the case of EEGs use the power of the signal by frequency and channels/electrodes.<br>
-Or use the [signal's spectrum](#Signal-spectrum) and find it using an algorithm like [fourier transform](#Fourier-transform) or [wavelet transform](#Wavelet-transform).
+To do that find the [signal spectrum](#Signal-spectrum) using an algorithm like [fourier transform](#Fourier-transform) or [wavelet transform](#Wavelet-transform).
 
 ##### Signal spectrum
 
