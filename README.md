@@ -4,6 +4,12 @@
 
 Process EEG datas by cleaning, extracting, creating a ML pipeline implementing a dimensionality reduction algorithm before classifying and handling a real time data-stream with sklearn.
 
+## Use
+
+Compile with **python3.9**.
+
+Optionally use flag **-v** for plot visualization.
+
 ## Preliminary Notions
 
 ### EEG datas

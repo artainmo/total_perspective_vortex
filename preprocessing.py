@@ -22,6 +22,14 @@ def get_data():
 # at rest (T0), moves left fist (T1) or moves right fist (T2)
 # It also returns the annotations which basically are the answers (T0, T1, T2)
 
+def clean_annotations(annot):
+    to_remove = []
+    for i, a in enumerate(annot):
+        if len(a['description']) > 2 and a['description'][0:3].lower() == "bad":
+            to_remove.append(i)         
+    annot.delete(to_remove)
+# Remove all the annotations whereby a recording failed
+
 # Visualize raw data
 def visualize_raw(raw_data):
     raw_data.plot(title='Run 1 - Baseline eyes open', n_channels=len(raw_data.ch_names), block=True)
@@ -71,20 +79,46 @@ def frequency_bands_data_per_state(datas, annotations):
         for annot in annotations:
             start = annot_time_to_rawData_time(annot['onset'])
             end = annot_time_to_rawData_time(annot['onset'] + annot['duration'])
-            print(f'{annot["onset"]}->{annot["duration"]}')
-            print(f'{start}:{end}')
             if key not in ret:
-                ret[key] = [datas[key][start:end]]
+                ret[key] = [datas[key][start:end].T]
             else:
-                ret[key].append(datas[key][start:end])
+                ret[key].append(datas[key][start:end].T)
     return ret
 # Returns dict of frequency-bands each containing a 3D numpy array of each state in time 
 # containing associated measurements of each channel/electrode.
 # Thus it has shape (30, +-672, 64) with 30 referring to 30 states over the 2min time period, 
 # +-672 measurements made over each +-4.1 seconds (time of each state) for each of the 64 channels.
+# In the end using .T (transpose), the returned object has shape (30, 64, +-672) so that the recordings made in time
+# are placed relative to each channel
+
+def extract_power(data_per_state):
+    if len(data_per_state.keys()) == 0:
+        print("Error: no frequency bands")
+        exit()
+    nb_channels = data_per_state[list(data_per_state.keys())[0]][0].shape[0]
+    nb_states = len(data_per_state[list(data_per_state.keys())[0]])
+    nb_freq_bands = len(data_per_state.keys())
+    ret = np.empty((0, nb_channels * nb_freq_bands))
+    for row in range(nb_states):
+        ret_row = np.array([])
+        for channel in range(nb_channels):
+            for freq in data_per_state.keys():
+                fft = np.fft.fft(data_per_state[freq][row][channel]) # fast fourier transform
+                # calculate the power spectral density (PSD) by taking the square of the magnitude of the FFT result
+                psd = np.abs(fft) ** 2
+                power = np.sum(psd) # addition all of them to one value to get total power
+                ret_row = np.append(ret_row, power)
+        ret = np.append(ret, [ret_row], axis=0)
+    return ret
+# Returns numpy array (30, 192)  with first dimension equal to number of examples and second dimension equal to
+# power per frequency-band of each channel
 
 if __name__ == "__main__":
     raw_data, annotations = get_data()
+    # annotations.rename({'T0': 'BAD'}) # test cleaning
+    clean_annotations(annotations)
+    raw_data.drop_channels(raw_data.info['bads']) # Remove bad channels from the start
+    raw_data.pick_types(eeg=True) # Only keep EEG channels
     if len(sys.argv) > 1 and sys.argv[1] == "-v":
         visualize_raw(raw_data) 
     filtered_frequency_bands_data = filter_frequency_bands(raw_data)
@@ -97,8 +131,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "-v":
         visualize_filtered_frequency_bands_data(filtered_frequency_bands_data, annotations)
     data_per_state = frequency_bands_data_per_state(filtered_frequency_bands_data, annotations)
-    print(len(data_per_state['alpha']))
-    print(len(data_per_state['alpha'][0]))
-    print(len(data_per_state['alpha'][0][0]))
-    print(len(data_per_state['alpha'][0][0][0]))
+    x_values = extract_power(data_per_state)
+    print(x_values.shape)
     
+
