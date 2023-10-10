@@ -113,12 +113,31 @@ def extract_power(data_per_state):
 # Returns numpy array (30, 192)  with first dimension equal to number of examples and second dimension equal to
 # power per frequency-band of each channel
 
-if __name__ == "__main__":
-    raw_data, annotations = get_data()
+def initial_cleaning(raw_data, annotations):
     # annotations.rename({'T0': 'BAD'}) # test cleaning
     clean_annotations(annotations)
     raw_data.drop_channels(raw_data.info['bads']) # Remove bad channels from the start
     raw_data.pick_types(eeg=True) # Only keep EEG channels
+
+def ffb(filtered_frequency_bands_data): #filter_frequency_bands
+    del filtered_frequency_bands_data['theta']
+    del filtered_frequency_bands_data['beta']
+
+def transform_to_x_values(filtered_frequency_bands_data, annotations):
+    data_per_state = frequency_bands_data_per_state(filtered_frequency_bands_data, annotations)
+    return extract_power(data_per_state)
+
+def preprocessing_transformation(raw_data, annotations):
+    initial_cleaning(raw_data, annotations) 
+    filtered_frequency_bands_data = filter_frequency_bands(raw_data)
+    ffb(filtered_frequency_bands_data)
+    x_values = transform_to_x_values(filtered_frequency_bands_data, annotations)
+    return x_values, annotations #maybe I should transform annotations to y values (numpy array)?
+
+
+if __name__ == "__main__":
+    raw_data, annotations = get_data()
+    initial_cleaning(raw_data, annotations)
     if len(sys.argv) > 1 and sys.argv[1] == "-v":
         visualize_raw(raw_data) 
     filtered_frequency_bands_data = filter_frequency_bands(raw_data)
@@ -126,12 +145,10 @@ if __name__ == "__main__":
         visualize_filtered_frequency_bands_data(filtered_frequency_bands_data, annotations)
     # Here we can see that theta gives out similar signals as delta but at a lower amplitude, thus we can remove theta
     # Also we can see that beta gives out similar signals as alpha but at a lower amplitude, thus we can remove beta
-    del filtered_frequency_bands_data['theta']
-    del filtered_frequency_bands_data['beta']
+    ffb(filtered_frequency_bands_data)
     if len(sys.argv) > 1 and sys.argv[1] == "-v":
         visualize_filtered_frequency_bands_data(filtered_frequency_bands_data, annotations)
-    data_per_state = frequency_bands_data_per_state(filtered_frequency_bands_data, annotations)
-    x_values = extract_power(data_per_state)
+    x_values = transform_to_x_values(filtered_frequency_bands_data, annotations)
     print(x_values.shape)
     
 

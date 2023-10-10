@@ -100,9 +100,13 @@ Here, [real time data stream classification](#Real-time-data-stream-classificati
 
 # Resources
 
-[6 Dimensionality Reduction Algorithms With Python](https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python)<br>
-[How to Calculate Principal Component Analysis (PCA) from Scratch in Python](https://machinelearningmastery.com/calculate-principal-component-analysis-scratch-python/)<br>
-[How to Calculate the SVD from Scratch with Python](https://machinelearningmastery.com/singular-value-decomposition-for-machine-learning/)<br>
+[machinelearningmastery - 6 Dimensionality Reduction Algorithms With Python](https://machinelearningmastery.com/dimensionality-reduction-algorithms-with-python)<br>
+[machinelearningmastery - How to Calculate Principal Component Analysis (PCA) from Scratch in Python](https://machinelearningmastery.com/calculate-principal-component-analysis-scratch-python/)<br>
+[machinelearningmastery - How to Calculate the SVD from Scratch with Python](https://machinelearningmastery.com/singular-value-decomposition-for-machine-learning/)<br>
 [Machine Learning Pipeline: Architecture of ML Platform in Production](https://www.altexsoft.com/blog/machine-learning-pipeline/)<br>
-
+[stackoverflow - What is exactly sklearn.pipeline.Pipeline?](https://stackoverflow.com/questions/33091376/what-is-exactly-sklearn-pipeline-pipeline)<br>
+[machinelearningmastery - Modeling Pipeline Optimization With scikit-learn](https://machinelearningmastery.com/modeling-pipeline-optimization-with-scikit-learn/)<br>
+[stackoverflow - Why should we use BaseEstimator and Transformermixmin from sklearn.base in python to create/ custom class?](https://stackoverflow.com/questions/72729841/why-should-we-use-baseestimator-and-transformermixmin-from-sklearn-base-in-pytho)<br>
+[geeksforgeeks - What is the difference between ‘transform’ and ‘fit_transform’ in sklearn-Python?](https://www.geeksforgeeks.org/what-is-the-difference-between-transform-and-fit_transform-in-sklearn-python/)<br>
+[Creating custom scikit-learn Transformers](https://www.andrewvillazon.com/custom-scikit-learn-transformers/)<br>
 
