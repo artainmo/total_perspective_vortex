@@ -3,7 +3,7 @@ import mne
 import matplotlib 
 matplotlib.use('TkAgg') #To work on macos monterey
 import matplotlib.pyplot as plt
-from libs.NeuralNetworkLib.manipulate_data import normalization_zscore
+from .libs.NeuralNetworkLib.manipulate_data import normalization_zscore
 import numpy as np
 
 # Download datasets
@@ -127,12 +127,20 @@ def transform_to_x_values(filtered_frequency_bands_data, annotations):
     data_per_state = frequency_bands_data_per_state(filtered_frequency_bands_data, annotations)
     return extract_power(data_per_state)
 
+def transform_to_y_values(annotations):
+    ret = np.array([])
+    for annot in annotations:
+        ret = np.append(ret, [int(annot['description'][1])])
+    return ret
+
+
 def preprocessing_transformation(raw_data, annotations):
     initial_cleaning(raw_data, annotations) 
     filtered_frequency_bands_data = filter_frequency_bands(raw_data)
     ffb(filtered_frequency_bands_data)
     x_values = transform_to_x_values(filtered_frequency_bands_data, annotations)
-    return x_values, annotations #maybe I should transform annotations to y values (numpy array)?
+    y_values = transform_to_y_values(annotations)
+    return x_values, y_values
 
 
 if __name__ == "__main__":
