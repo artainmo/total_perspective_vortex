@@ -1,4 +1,4 @@
-datasets/MNE-eegbci-data
+processing_EEGs_lib/datasets/MNE-eegbci-data
 
 *__pycache__
 *.DS_Store
