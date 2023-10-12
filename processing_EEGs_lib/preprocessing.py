@@ -14,10 +14,13 @@ def get_data():
     data_paths = mne.datasets.eegbci.load_data(1, [1,2,3,4,5,6,7,8,9,10,11,12,13,14], path="./datasets", 
                                 force_update=False, update_path=True, 
                                 base_url='https://physionet.org/files/eegmmidb/1.0.0/', verbose=None)
-    raw_data = mne.io.read_raw_edf(data_paths[2], preload=True)
+    #left_right_fist_datasets = [3, 4, 7, 8, 11, 12] #Use all datasets that describe the same for more training data
+    left_right_fist_datasets = [4,7] #Use all datasets that describe the same for more training data
+    raws = [mne.io.read_raw_edf(data_paths[number-1], preload=True) for number in left_right_fist_datasets]
+    raw_data = mne.io.concatenate_raws(raws)
     annotations = raw_data.annotations.copy()
     return raw_data, annotations
-# Returns mne.raw object containing the datas in a raw format
+# Returns mne.raw object containing the datas in a raw forrmat
 # We will use dataset 3 where we will try to predict if someone is 
 # at rest (T0), moves left fist (T1) or moves right fist (T2)
 # It also returns the annotations which basically are the answers (T0, T1, T2)
@@ -133,14 +136,28 @@ def transform_to_y_values(annotations):
         ret = np.append(ret, [int(annot['description'][1])])
     return ret
 
+def remove_class_labels(x, y):
+    #annotation 0 equals rest and can be removed as we only want binary classification between two movements
+    remove_indexes = np.where(y == 0)[0]
+    y = np.delete(y, remove_indexes)
+    x = np.delete(x, remove_indexes, axis=0)
+    return x, y
 
 def preprocessing_transformation(raw_data, annotations):
+    print(raw_data.__len__)
+    print(len(annotations))
     initial_cleaning(raw_data, annotations) 
+    print(raw_data.__len__)
+    print(len(annotations))
     filtered_frequency_bands_data = filter_frequency_bands(raw_data)
+    print(filtered_frequency_bands_data['delta'].shape)
+    print(len(annotations))
     ffb(filtered_frequency_bands_data)
+    print(filtered_frequency_bands_data['delta'].shape)
+    print(len(annotations))
     x_values = transform_to_x_values(filtered_frequency_bands_data, annotations)
     y_values = transform_to_y_values(annotations)
-    return x_values, y_values
+    return remove_class_labels(x_values, y_values)
 
 
 if __name__ == "__main__":
