@@ -9,14 +9,15 @@ import numpy as np
 # Download datasets
 # Learn more about datasets (https://physionet.org/content/eegmmidb/1.0.0/, 
 #           https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#footcite-schalketal2004).
-def get_data():
+def get_data(set_nb=3):
     # This returns a list of pathlib.PosixPath objects referring to 14 datasets each describing a different task
     data_paths = mne.datasets.eegbci.load_data(1, [1,2,3,4,5,6,7,8,9,10,11,12,13,14], path="./datasets", 
                                 force_update=False, update_path=True, 
-                                base_url='https://physionet.org/files/eegmmidb/1.0.0/', verbose=None)
+                                base_url='https://physionet.org/files/eegmmidb/1.0.0/', verbose='warning')
     #left_right_fist_datasets = [3, 4, 7, 8, 11, 12] #Use all datasets that describe the same for more training data
-    left_right_fist_datasets = [4,7] #Use all datasets that describe the same for more training data
-    raws = [mne.io.read_raw_edf(data_paths[number-1], preload=True) for number in left_right_fist_datasets]
+    left_right_fist_datasets = [set_nb] #Concatenation of datasets via mne creates bugs later, use one at a time
+    raws = [mne.io.read_raw_edf(data_paths[number-1], preload=True, verbose='warning') 
+                for number in left_right_fist_datasets]
     raw_data = mne.io.concatenate_raws(raws)
     annotations = raw_data.annotations.copy()
     return raw_data, annotations
@@ -49,7 +50,8 @@ g_freq_bands = {
 def filter_frequency_bands(raw_data, freq_bands = g_freq_bands):
     filtered_data = {}
     for band, (low_freq, high_freq) in freq_bands.items():
-        filtered_data[band] = mne.filter.filter_data(raw_data.get_data(), raw_data.info['sfreq'], low_freq, high_freq)
+        filtered_data[band] = mne.filter.filter_data(raw_data.get_data(), raw_data.info['sfreq'], 
+                                                     low_freq, high_freq, verbose='warning')
         filtered_data[band] = filtered_data[band].T 
         filtered_data[band] = normalization_zscore(filtered_data[band]) 
     return filtered_data
@@ -95,12 +97,12 @@ def frequency_bands_data_per_state(datas, annotations):
 # are placed relative to each channel
 
 def extract_power(data_per_state):
-    if len(data_per_state.keys()) == 0:
-        print("Error: no frequency bands")
-        exit()
     nb_channels = data_per_state[list(data_per_state.keys())[0]][0].shape[0]
     nb_states = len(data_per_state[list(data_per_state.keys())[0]])
     nb_freq_bands = len(data_per_state.keys())
+    if nb_freq_bands == 0:
+        print("Error: no frequency bands")
+        exit()
     ret = np.empty((0, nb_channels * nb_freq_bands))
     for row in range(nb_states):
         ret_row = np.array([])
@@ -120,7 +122,7 @@ def initial_cleaning(raw_data, annotations):
     # annotations.rename({'T0': 'BAD'}) # test cleaning
     clean_annotations(annotations)
     raw_data.drop_channels(raw_data.info['bads']) # Remove bad channels from the start
-    raw_data.pick_types(eeg=True) # Only keep EEG channels
+    raw_data.pick_types(eeg=True, verbose='warning') # Only keep EEG channels # creates error messages
 
 def ffb(filtered_frequency_bands_data): #filter_frequency_bands
     del filtered_frequency_bands_data['theta']
@@ -144,17 +146,9 @@ def remove_class_labels(x, y):
     return x, y
 
 def preprocessing_transformation(raw_data, annotations):
-    print(raw_data.__len__)
-    print(len(annotations))
     initial_cleaning(raw_data, annotations) 
-    print(raw_data.__len__)
-    print(len(annotations))
     filtered_frequency_bands_data = filter_frequency_bands(raw_data)
-    print(filtered_frequency_bands_data['delta'].shape)
-    print(len(annotations))
     ffb(filtered_frequency_bands_data)
-    print(filtered_frequency_bands_data['delta'].shape)
-    print(len(annotations))
     x_values = transform_to_x_values(filtered_frequency_bands_data, annotations)
     y_values = transform_to_y_values(annotations)
     return remove_class_labels(x_values, y_values)
