@@ -12,14 +12,7 @@ the most discriminative spatial patterns.
 '''
 
 class CSPTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self, y, nb_components=4):
-        class_labels = np.unique(y)
-        if len(class_labels) != 2:
-            print("CSPTransformer: Error: CSP is a binary classification method: there should be two class labels.", 
-                  file=sys.stderr)
-            exit()
-        self.y = y
-        self.class_labels = class_labels
+    def __init__(self, nb_components=4): 
         '''
         In practice, it's common to try a range of values for the number of components (e.g., from 2 to 10) 
         and evaluate their impact on classification accuracy.
@@ -29,9 +22,14 @@ class CSPTransformer(BaseEstimator, TransformerMixin):
         self.nb_components = nb_components
         self.filters = np.array([])
 
-    def fit(self, x):
-        x_class1 = x[self.y == self.class_labels[0]] #take all values related to one class-label
-        x_class2 = x[self.y == self.class_labels[1]]
+    def fit(self, x, y):
+        class_labels = np.unique(y)
+        if len(class_labels) != 2:
+            print("CSPTransformer: Error: CSP is a binary classification method: there should be two class labels.", 
+                  file=sys.stderr)
+            exit()
+        x_class1 = x[y == class_labels[0]] #take all values related to one class-label
+        x_class2 = x[y == class_labels[1]]
         '''
         Get covariance matrices for each class.
         A covariance matrix is a square matrix giving the covariance between each element pair in a vector

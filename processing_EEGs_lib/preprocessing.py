@@ -3,7 +3,7 @@ import mne
 import matplotlib 
 matplotlib.use('TkAgg') #To work on macos monterey
 import matplotlib.pyplot as plt
-from .libs.NeuralNetworkLib.manipulate_data import normalization_zscore
+from .libs.NeuralNetworkLib.manipulate_data import minmax_normalization
 import numpy as np
 
 # Download datasets
@@ -53,7 +53,7 @@ def filter_frequency_bands(raw_data, freq_bands = g_freq_bands):
         filtered_data[band] = mne.filter.filter_data(raw_data.get_data(), raw_data.info['sfreq'], 
                                                      low_freq, high_freq, verbose='warning')
         filtered_data[band] = filtered_data[band].T 
-        filtered_data[band] = normalization_zscore(filtered_data[band]) 
+        filtered_data[band] = minmax_normalization(filtered_data[band]) 
     return filtered_data
 # Returns dictionary of requested frequency bands
 # Each frequency band key contains a numpy array representing the measurements over time (160 per second during 2min)
@@ -155,7 +155,7 @@ def preprocessing_transformation(raw_data, annotations):
 
 
 if __name__ == "__main__":
-    raw_data, annotations = get_data()
+    raw_data, annotations = get_data() # We will only get dataset 3 for better visualization of less data
     initial_cleaning(raw_data, annotations)
     if len(sys.argv) > 1 and sys.argv[1] == "-v":
         visualize_raw(raw_data) 
