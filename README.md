@@ -166,7 +166,7 @@ Lacks built-in mechanism for incremental update to the model. A solution would b
 For this project I will start by trying KNN as it works well on low-dimensional-datasets. Ideally I would use this version 'Large Margin Nearest Neighbors (LMNN) algorithm' that implements incremental updates. I hope it will be fast enough for real-time-processing.<br>
 Before moving on to other classifier first try adapting hyperparameters.<br>
 If it is not precise enough I can try 'Online Gradient Boosting'. Else if it is not fast enough I could try 'LightGBM'.<br>
-If speed is still an issue I could try Decision trees.
+If speed is still an issue I could try decision trees.
 
 ### Deployment
 
