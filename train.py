@@ -3,9 +3,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from processing_EEGs_lib.preprocessing import preprocessing_transformation, get_data
 from processing_EEGs_lib.dimensionality_reduction_algorithm import CSPTransformer
-#from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from random import randint
 import sys
 
@@ -48,8 +49,10 @@ def preprocessed_data():
     return x, y
 
 def split_data(x, y):
-    # Split in 0.6 (training), 0.2 (test), 0.2 (validation) 
+    # Split in 0.6 (training), 0.2 (test), 0.2 (validation)
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, train_size=0.8, shuffle=True)
+    # Validation set doesn't need to be cut because sklearn classifier make the cut themselves
+    # or in the case of DecisionTrees validation sets are not even used.
     #x_train, x_validation, y_train, y_validation = train_test_split(x_train, y_train, test_size=0.2, train_size=0.8, 
                                                                     #shuffle=True)
     return x_train, x_test, y_train, y_test
@@ -59,22 +62,55 @@ def processing(x, y):
     steps = [
                 #The recommended approach is to normalize the data after splitting it into training and testing sets. 
                 #The rationale behind this recommendation is to prevent any information leakage from the testing set 
-                #into the training set
-                #If you need to perform feature importance (for example, for dimensionality reduction purposes), 
-                #you must normalize your dataset in advance
-                ("normalization", MinMaxScaler()), 
-                #nb_components in CSP does not seem to have impact
-                ("dimensionality-reduction-algorithm", CSPTransformer(nb_components=4))
+                #into the training set.
+                #For this dataset minmax-normalization leads to excessive overfitting as shown in examples below.
+                #Normalization may fail on this dataset because all features are on the same scale either way 
+                #and minmax eliminates outliers that in certain cases can be useful signals.
+                # ("normalization", MinMaxScaler()), 
+                #StandardScalar uses z-score normalization which normalizes without elimination of outliers.
+                #It slightly improves scores while minmax-normalization completely lowers scores.
+                #Thus the secret to find generalizable trends in this dataset  lies in the outliers.
+                ("normalization", StandardScaler()), 
+                #nb_components in CSP does not seem to have much impact, 4 seems best.
+                #CSP biases towards overfitting which can be good or bad as shown in examples below.
+                #CSP slows down the algorithm when called before each test but not when called once before all tests.
+                ("dimensionality-reduction-algorithm", CSPTransformer(nb_components=4)),
             ]
     process_x_pipe = Pipeline(steps)
     print_pipe(process_x_pipe)
     x = process_x_pipe.fit_transform(x, y)
     print_shape(x, y)
-    return steps
+    return x
 
-def train_test(steps, x_train, x_test, y_train, y_test):
+def train_test(x_train, x_test, y_train, y_test):
     print("\033[92mTRAIN\033[0m")
-    pipe = Pipeline(steps)
+    #For value k (n_neighbors) in practice values between 1-21 are used.
+    #Higher values bias towards underfitting and lower values to overfitting.
+    #KNN when optimized for test set with K=21 only bring 1.7% benefit all the while scoring 0.78 on training set.
+    #When not using CSP KNN completely underfits. Thus here CSP's overfitting bias is beneficial.
+    #When using CSP without minmax-normalization, score improves sufficiently (train: 0.73, test: 0.7) especially when
+    #also lowering K from 21 to 2 (train: 1.0, test: 0.9844)
+    #Interestingly when using StandardScaler, thus z-score normalization, thus normalization that maintains outliers
+    #score improves further (train: 1.0, test: 0.997)
+    #pipe = Pipeline([("classifier", KNeighborsClassifier(n_neighbors=2))])
+    #GradientBoosting leads to overfitting, score 0.99 on training set and only 1% benefit on test set.
+    #When not using CSP training score becomes 0.87 and test set 0.548 which means CSP contributes 
+    #negatively to overfitting here.
+    #When using CSP and normalizing a second time afterwards, scoring worsens.
+    #When not minmax-normalizing before CSP, scoring stays same, while when normalizing with StandardScalar the scoring
+    #completely improves (train: 0.987, test: 0.963).
+    #When using n_estimators=100 scoring improves further (train: 1.0, test: 0.9857) however speed slows down a lot.
+    #pipe = Pipeline([("classifier", GradientBoostingClassifier(n_estimators=100, validation_fraction=0.9))])
+    #DesicionTree with max_depth=3 is able to reduce overfitting (train: 0.8, 0.54 over 1000 tests)
+    #however test set is still only 3.2-4.6% better than complete randomness.
+    #When not using CSP overfitting improves even more (train: 0.69, test: 0.58).
+    #When using CSP but not minmax-normalization score becomes good enough (train: 0.83, test: 0.78).
+    #This means that cutting out outliers with minmax-normalization was pathological in this dataset 
+    #even if in most datasets it is beneficial.
+    #StandardScalar does not impact scoring compared to no normalization. Indicating DesicionTrees are not sensitive to
+    #normalization. However when changing max_depth from 1 to 3, score improves (train: 1.0, test: 0.9842).
+    #DecisionTree is clearly the fastest.
+    pipe = Pipeline([("classifier", DecisionTreeClassifier(max_depth=3))])
     print_pipe(pipe)
     pipe.fit(x_train, y_train)
     score_train = print_score(pipe, x_train, y_train, " training set:")
@@ -84,23 +120,20 @@ def train_test(steps, x_train, x_test, y_train, y_test):
 
 def main():
     x, y = preprocessed_data()
-    steps = processing(x, y)
+    x = processing(x, y)
     _continue()
-    #For value k (n_neighbors) in practice values between 1-21 are used.
-    #Higher values bias towards underfitting and vice-versa 
-    #steps.append(("classifier", KNeighborsClassifier(n_neighbors=10))) #KNN did not work on test set nomatter the K value
-    steps.append(("classifier", GradientBoostingClassifier(validation_fraction=0.2)))
     train_scores = []
     test_scores = []
-    for _ in range(20):
+    nb_tests = 6 if g_skip else 1000
+    for _ in range(nb_tests):
         x_train, x_test, y_train, y_test = split_data(x, y)
-        score_train, score_test = train_test(steps, x_train, x_test, y_train, y_test)
+        score_train, score_test = train_test(x_train, x_test, y_train, y_test)
         _continue()
         train_scores.append(score_train)
         test_scores.append(score_test)
     print("\033[92mCONCLUSIONS\033[0m")
-    print(" average score over 20 experiments of training set:", sum(train_scores)/len(train_scores))
-    print(" average score over 20 experiments of test set:    ", sum(test_scores)/len(test_scores))
+    print(" average score over", nb_tests, "experiments of training set:", sum(train_scores)/len(train_scores))
+    print(" average score over", nb_tests, "experiments of test set:    ", sum(test_scores)/len(test_scores))
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "-s":
