@@ -64,7 +64,7 @@ class CSPTransformer(BaseEstimator, TransformerMixin):
         descending_indices = np.flip(ascending_indices)
         eigenvalues = eigenvalues[descending_indices]
         eigenvectors = eigenvectors[:, descending_indices] #reorder the columns (eigenvectors) of the eigenvectors matrix
-        self.filters = eigenvectors[:, :self.nb_components]
+        self.filters = eigenvectors[:, :self.nb_components].real.astype(np.float32)
         return self
 
     def transform(self, x):

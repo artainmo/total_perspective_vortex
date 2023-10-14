@@ -45,7 +45,7 @@ Python package for machine learning also called sklearn. In comparison to tensor
 #### Preprocessing
 Parse the data. In this case for EEG use the specialized python library called [MNE](#MNE).<br>
 
-Visualize the data and remove features with no predictive power for the desired output. Basically do [general data preparation](https://github.com/artainmo/neural-networks/tree/main#data-preparation--visualization).
+Visualize the data and remove features with no predictive power for the desired output. Basically do [general data preparation](https://github.com/artainmo/neural-networks/tree/main#data-preparation--visualization). Sometimes those steps are beter done outside and before the pipeline.
 
 Extract new features from the data.<br>
 For example in the case of EEGs use the power of the signal by frequency and channels/electrodes.<br>
@@ -99,6 +99,8 @@ The choice of the best algorithm will depend on the EEG dataset, factors such as
 It's a good practice to perform model selection and hyperparameter tuning using cross-validation to determine which algorithm performs best.<br>
 Additionally, factors like interpretability, computational resources, and the need for real-time processing can be considered.
 
+#### Classifiers
+
 The following are classification models often used in the context of EEGs processed by CSP.<br>
 I need to find one that works best for binary classification on small datasets while being fast and able to self-update (bonus) for real-time processing.
 
@@ -116,8 +118,8 @@ SVMs are a set of supervised learning methods used for classification, regressio
 SVM's advantage is ability to perform well in high dimensional spaces, thus when dataset contains a lot of features.
 
 ###### Random Forest (RF) (and Decision trees)
-A RF is a classifier that fits a number of decision tree classifiers on various sub-samples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting.<br>
 A decision tree is a decision support hierarchical model that uses a tree-like model of decisions and their possible consequences, including chance event outcomes, resource costs, and utility. It is a supervised learning algorithm only made out of conditional control statements.
+A RF is a classifier that fits a number of decision tree classifiers on various sub-samples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting.<br>
 
 Decision trees can be highly efficient on small datasets because they are highly interpretable and computationally efficient which is a positive for real-time processing. If speed is important they are fast.<br>
 Decision trees are particularly effective in low-dimensional feature spaces, where they can quickly identify decision boundaries.<br>
@@ -139,8 +141,7 @@ It relies on the idea that similar data points tend to have similar labels or va
 During the training phase, the KNN algorithm stores the entire training dataset as a reference. When making predictions, it calculates the distance between the input data point and all the training examples, using a chosen distance metric such as Euclidean distance.<br>
 Next, the algorithm identifies the K nearest neighbors to the input data point based on their distances. In the case of classification, the algorithm assigns the most common class label among the K neighbors as the predicted label for the input data point. For regression, it calculates the average or weighted average of the target values of the K neighbors to predict the value for the input data point.
 
-KNN is often considered a good choice for small datasets because it is easy to setup and effective on low-dimensional datasets.<br>
-KNN can capture non-linear relationships in the data. If the small dataset exhibits complex patterns, KNN can adapt to it.
+KNN is often considered a good choice for small datasets because it is easy to setup and effective on low-dimensional datasets. KNN can capture non-linear relationships in the data. If the small dataset exhibits complex patterns, KNN can adapt to it.<br>
 Its training is very fast as it only needs to store the training samples. Which is good for real-time processing and subsequent self-updating. Some variations of KNN, such as the Large Margin Nearest Neighbors (LMNN) algorithm, support incremental learning by updating the nearest neighbor search structure as new data arrives.<br>
 However when the dataset is large it is computationally expensive and thus slow. Also when dataset is large KNN becomes memory expensive by keeping a copy of it in memory.<br>
 Thus overall KNN is best for small datasets.
@@ -159,7 +160,13 @@ Hyperparameter tuning becomes more critical on small datasets, as there is less 
 
 Some implementations of Gradient Boosting, such as LightGBM and CatBoost, are designed to be efficient and can provide fast predictions. They utilize techniques like histogram-based gradient boosting and optimized data structures to speed up processing.<br>
 Gradient Boosting algorithms can be computationally intensive, and memory usage can be substantial. In real-time processing, this may be a concern, particularly for very large datasets.<br>
-Lacks built-in mechanism for incremental update to the model.
+Lacks built-in mechanism for incremental update to the model. A solution would be to periodically retrain the model with old and new data. However on large datasets this would be very slow. Alternatively 'Online Gradient Boosting' is a variant that allows incremental updates as new data arrives.
+
+#### Choice
+For this project I will start by trying KNN as it works well on low-dimensional-datasets. Ideally I would use this version 'Large Margin Nearest Neighbors (LMNN) algorithm' that implements incremental updates. I hope it will be fast enough for real-time-processing.<br>
+Before moving on to other classifier first try adapting hyperparameters.<br>
+If it is not precise enough I can try 'Online Gradient Boosting'. Else if it is not fast enough I could try 'LightGBM'.<br>
+If speed is still an issue I could try Decision trees.
 
 ### Deployment
 
