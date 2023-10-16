@@ -9,6 +9,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from random import randint
 import sys
+import time
 
 def print_shape(x, y):
     rand1 = randint(0, x.shape[0]-1)
@@ -116,6 +117,7 @@ def train_test(x_train, x_test, y_train, y_test, algo):
         pipe = Pipeline([("classifier", DecisionTreeClassifier(max_depth=3))])
     else:
         print("train.py: Error: Classification algo", algo, "not found.")
+        exit()
     print_pipe(pipe)
     pipe.fit(x_train, y_train)
     score_train = print_score(pipe, x_train, y_train, " training set:")
@@ -130,15 +132,19 @@ def main(algo):
     train_scores = []
     test_scores = []
     nb_tests = 6 if g_skip else 1000
+    start_time = time.time()
     for _ in range(nb_tests):
         x_train, x_test, y_train, y_test = split_data(x, y)
         score_train, score_test, classifier = train_test(x_train, x_test, y_train, y_test, algo)
         _continue()
         train_scores.append(score_train)
         test_scores.append(score_test)
+    end_time = time.time()
     print("\033[92mCONCLUSIONS\033[0m")
+    print("Classifier algorith:                                ", classifier)
     print("average score over", nb_tests, "experiments of training set:", sum(train_scores)/len(train_scores))
     print("average score over", nb_tests, "experiments of test set:    ", sum(test_scores)/len(test_scores))
+    print("Total execution time in seconds:                    ", end_time-start_time)
     _continue()
     print("\033[92mCROSS VALIDATION\033[0m")
     #Train and test on 6 different subsets of the data as we concatenated 6 datasets at the start
