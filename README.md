@@ -162,11 +162,14 @@ Some implementations of Gradient Boosting, such as LightGBM and CatBoost, are de
 Gradient Boosting algorithms can be computationally intensive, and memory usage can be substantial. In real-time processing, this may be a concern, particularly for very large datasets.<br>
 Lacks built-in mechanism for incremental update to the model. A solution would be to periodically retrain the model with old and new data. However on large datasets this would be very slow. Alternatively 'Online Gradient Boosting' is a variant that allows incremental updates as new data arrives.
 
-#### Choice
+#### Conclusions
 For this project I will start by trying KNN as it works well on low-dimensional-datasets. Ideally I would use this version 'Large Margin Nearest Neighbors (LMNN) algorithm' that implements incremental updates. I hope it will be fast enough for real-time-processing.<br>
-Before moving on to other classifier first try adapting hyperparameters.<br>
+Before moving on to other classifier, first try adapting hyperparameters.<br>
 If it is not precise enough I can try 'Online Gradient Boosting'. Else if it is not fast enough I could try 'LightGBM'.<br>
 If speed is still an issue I could try decision trees.
+
+In the end I implemented those three algorithms KNN, GradientBoosting and DecisionTree. DecisionTree achieves across 1000 tests 0.98 mean score on test sets and takes 1.92s to execute them all. KNN as I expected was highly efficient with 0.9975 mean score on test sets over the 1000 tests in 6.59s. GradientBoosting was way slower with 43s time for 0.98 mean score.<br>
+Contrary to conventional practice I had to keep outliers in the training data to achieve any predictive power.
 
 ### Deployment
 
