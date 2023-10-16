@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from processing_EEGs_lib.preprocessing import preprocessing_transformation, get_data
 from processing_EEGs_lib.dimensionality_reduction_algorithm import CSPTransformer
 from sklearn.neighbors import KNeighborsClassifier
@@ -51,7 +51,7 @@ def preprocessed_data():
 def split_data(x, y):
     # Split in 0.6 (training), 0.2 (test), 0.2 (validation)
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, train_size=0.8, shuffle=True)
-    # Validation set doesn't need to be cut because sklearn classifier make the cut themselves
+    # Validation set doesn't need to be cut because sklearn classifiers make the cut themselves
     # or in the case of DecisionTrees validation sets are not even used.
     #x_train, x_validation, y_train, y_validation = train_test_split(x_train, y_train, test_size=0.2, train_size=0.8, 
                                                                     #shuffle=True)
@@ -68,8 +68,8 @@ def processing(x, y):
                 #and minmax eliminates outliers that in certain cases can be useful signals.
                 # ("normalization", MinMaxScaler()), 
                 #StandardScalar uses z-score normalization which normalizes without elimination of outliers.
-                #It slightly improves scores while minmax-normalization completely lowers scores.
-                #Thus the secret to find generalizable trends in this dataset  lies in the outliers.
+                #It slightly improves scores compared to no normalization while minmax completely lowers scores.
+                #Thus the secret to find generalizable trends in this dataset lies in the outliers.
                 ("normalization", StandardScaler()), 
                 #nb_components in CSP does not seem to have much impact, 4 seems best.
                 #CSP biases towards overfitting which can be good or bad as shown in examples below.
@@ -106,17 +106,17 @@ def train_test(x_train, x_test, y_train, y_test):
     #When not using CSP overfitting improves even more (train: 0.69, test: 0.58).
     #When using CSP but not minmax-normalization score becomes good enough (train: 0.83, test: 0.78).
     #This means that cutting out outliers with minmax-normalization was pathological in this dataset 
-    #even if in most datasets it is beneficial.
+    #even if in most datasets this is beneficial.
     #StandardScalar does not impact scoring compared to no normalization. Indicating DesicionTrees are not sensitive to
-    #normalization. However when changing max_depth from 1 to 3, score improves (train: 1.0, test: 0.9842).
-    #DecisionTree is clearly the fastest.
+    #normalization. When changing max_depth from 1 to 3, score improves (train: 1.0, test: 0.9842).
+    #DecisionTrees are clearly the fastest.
     pipe = Pipeline([("classifier", DecisionTreeClassifier(max_depth=3))])
     print_pipe(pipe)
     pipe.fit(x_train, y_train)
     score_train = print_score(pipe, x_train, y_train, " training set:")
     print("\033[92mTEST\033[0m")
     score_test = print_score(pipe, x_test, y_test, " test set:")
-    return score_train, score_test
+    return score_train, score_test, pipe.named_steps['classifier']
 
 def main():
     x, y = preprocessed_data()
@@ -127,13 +127,21 @@ def main():
     nb_tests = 6 if g_skip else 1000
     for _ in range(nb_tests):
         x_train, x_test, y_train, y_test = split_data(x, y)
-        score_train, score_test = train_test(x_train, x_test, y_train, y_test)
+        score_train, score_test, classifier = train_test(x_train, x_test, y_train, y_test)
         _continue()
         train_scores.append(score_train)
         test_scores.append(score_test)
     print("\033[92mCONCLUSIONS\033[0m")
-    print(" average score over", nb_tests, "experiments of training set:", sum(train_scores)/len(train_scores))
-    print(" average score over", nb_tests, "experiments of test set:    ", sum(test_scores)/len(test_scores))
+    print("average score over", nb_tests, "experiments of training set:", sum(train_scores)/len(train_scores))
+    print("average score over", nb_tests, "experiments of test set:    ", sum(test_scores)/len(test_scores))
+    _continue()
+    print("\033[92mCROSS VALIDATION\033[0m")
+    #Train and test on 6 different subsets of the data as we concatenated 6 datasets at the start
+    #After splitting, cross validation will use each subset as testing-set once while training with other sets
+    cv_scores = cross_val_score(classifier, x, y, cv=6)
+    for i, subset_score in enumerate(cv_scores):
+        print("Subset", i+1, "score:", subset_score)
+    print("-> Mean accuracy:", cv_scores.mean())
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "-s":
