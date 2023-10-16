@@ -82,7 +82,7 @@ def processing(x, y):
     print_shape(x, y)
     return x
 
-def train_test(x_train, x_test, y_train, y_test):
+def train_test(x_train, x_test, y_train, y_test, algo):
     print("\033[92mTRAIN\033[0m")
     #For value k (n_neighbors) in practice values between 1-21 are used.
     #Higher values bias towards underfitting and lower values to overfitting.
@@ -92,7 +92,8 @@ def train_test(x_train, x_test, y_train, y_test):
     #also lowering K from 21 to 2 (train: 1.0, test: 0.9844)
     #Interestingly when using StandardScaler, thus z-score normalization, thus normalization that maintains outliers
     #score improves further (train: 1.0, test: 0.997)
-    #pipe = Pipeline([("classifier", KNeighborsClassifier(n_neighbors=2))])
+    if algo == "KNN":
+        pipe = Pipeline([("classifier", KNeighborsClassifier(n_neighbors=2))])
     #GradientBoosting leads to overfitting, score 0.99 on training set and only 1% benefit on test set.
     #When not using CSP training score becomes 0.87 and test set 0.548 which means CSP contributes 
     #negatively to overfitting here.
@@ -100,7 +101,8 @@ def train_test(x_train, x_test, y_train, y_test):
     #When not minmax-normalizing before CSP, scoring stays same, while when normalizing with StandardScalar the scoring
     #completely improves (train: 0.987, test: 0.963).
     #When using n_estimators=100 scoring improves further (train: 1.0, test: 0.9857) however speed slows down a lot.
-    #pipe = Pipeline([("classifier", GradientBoostingClassifier(n_estimators=100, validation_fraction=0.9))])
+    elif algo == "GradientBoosting":
+        pipe = Pipeline([("classifier", GradientBoostingClassifier(n_estimators=100, validation_fraction=0.9))])
     #DesicionTree with max_depth=3 is able to reduce overfitting (train: 0.8, 0.54 over 1000 tests)
     #however test set is still only 3.2-4.6% better than complete randomness.
     #When not using CSP overfitting improves even more (train: 0.69, test: 0.58).
@@ -110,7 +112,10 @@ def train_test(x_train, x_test, y_train, y_test):
     #StandardScalar does not impact scoring compared to no normalization. Indicating DesicionTrees are not sensitive to
     #normalization. When changing max_depth from 1 to 3, score improves (train: 1.0, test: 0.9842).
     #DecisionTrees are clearly the fastest.
-    pipe = Pipeline([("classifier", DecisionTreeClassifier(max_depth=3))])
+    elif algo == "DecisionTree":
+        pipe = Pipeline([("classifier", DecisionTreeClassifier(max_depth=3))])
+    else:
+        print("train.py: Error: Classification algo", algo, "not found.")
     print_pipe(pipe)
     pipe.fit(x_train, y_train)
     score_train = print_score(pipe, x_train, y_train, " training set:")
@@ -118,7 +123,7 @@ def train_test(x_train, x_test, y_train, y_test):
     score_test = print_score(pipe, x_test, y_test, " test set:")
     return score_train, score_test, pipe.named_steps['classifier']
 
-def main():
+def main(algo):
     x, y = preprocessed_data()
     x = processing(x, y)
     _continue()
@@ -127,7 +132,7 @@ def main():
     nb_tests = 6 if g_skip else 1000
     for _ in range(nb_tests):
         x_train, x_test, y_train, y_test = split_data(x, y)
-        score_train, score_test, classifier = train_test(x_train, x_test, y_train, y_test)
+        score_train, score_test, classifier = train_test(x_train, x_test, y_train, y_test, algo)
         _continue()
         train_scores.append(score_train)
         test_scores.append(score_test)
@@ -144,9 +149,13 @@ def main():
     print("-> Mean accuracy:", cv_scores.mean())
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "-s":
+    if (len(sys.argv) > 1 and sys.argv[1] == "-s") or (len(sys.argv) > 2 and sys.argv[2] == "-s"):
         g_skip = False
     else:
         g_skip = True
-    main()
+    if (len(sys.argv) > 1 and sys.argv[1] == "-a") or (len(sys.argv) > 2 and sys.argv[2] == "-a"):
+        algo = input("Select classifier algorithm (DecisionTree, KNN, GradientBoosting) : ")
+    else:
+        algo = "KNN"
+    main(algo)
 
