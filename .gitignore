@@ -1,4 +1,5 @@
 datasets/MNE-eegbci-data
+saved/pipeline.joblib
 
 *__pycache__
 *.DS_Store

@@ -10,6 +10,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from random import randint
 import sys
 import time
+import joblib
 
 def print_shape(x, y):
     rand1 = randint(0, x.shape[0]-1)
@@ -81,7 +82,7 @@ def processing(x, y):
     print_pipe(process_x_pipe)
     x = process_x_pipe.fit_transform(x, y)
     print_shape(x, y)
-    return x
+    return x, steps
 
 def train_test(x_train, x_test, y_train, y_test, algo):
     print("\033[92mTRAIN\033[0m")
@@ -127,7 +128,7 @@ def train_test(x_train, x_test, y_train, y_test, algo):
 
 def main(algo):
     x, y = preprocessed_data()
-    x = processing(x, y)
+    x, pipeline_steps = processing(x, y)
     _continue()
     train_scores = []
     test_scores = []
@@ -153,6 +154,12 @@ def main(algo):
     for i, subset_score in enumerate(cv_scores):
         print("Subset", i+1, "score:", subset_score)
     print("-> Mean accuracy:", cv_scores.mean())
+    print("\033[92mSAVE PIPELINE\033[0m")
+    pipeline_steps.append(("classifier", classifier))
+    final_pipeline = Pipeline(pipeline_steps)
+    print_pipe(final_pipeline)
+    if input("Do you want to save this pipeline? (y/n) : ") == 'y':
+        print(joblib.dump(final_pipeline, "saved/pipeline.joblib"))
 
 if __name__ == "__main__":
     if (len(sys.argv) > 1 and sys.argv[1] == "-s") or (len(sys.argv) > 2 and sys.argv[2] == "-s"):
