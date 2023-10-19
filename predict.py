@@ -32,8 +32,7 @@ def main(subject, task, specific):
         print("\033[92mPREDICT\033[0m")
         start_time = time.time()
         num_corr = 0
-        err_x = []
-        err_y = []
+        xc = np.array(x)
         print(f'{"[nb]": <25}{"[prediction]": <13}{"[answer]": <13}[result]')
         for i, (_x, answer) in enumerate(zip(x, y)):
             prediction = pipeline.predict([_x])
@@ -42,24 +41,24 @@ def main(subject, task, specific):
                 num_corr += 1
             else:
                 correct = "WRONG"
-                err_x.append(_x)
-                err_y.append(answer)
             print(f'{f"prediction {i+1:03d}:": <25}{prediction[0]: <13}{answer: <13}{correct}')
         end_time = time.time()
         print(f'\n{"Total execution time in seconds:": <33}{end_time-start_time:.4f}')
         print(f'{"Accuracy:": <33}{num_corr/len(x):.4f}')
-        if len(err_x) == 0 or input("\nDo you want to drift (adapt in real time) the classifier? (y/n) : ") == "n":
+        if input("\nDo you want to drift (adapt in real time) the classifier? (y/n) : ") == "n":
             break
         print("\n\033[92mDRIFT\033[0m")
-        err_x = np.array(err_x)
-        err_y = np.array(err_y)
         try:
             #Because pipeline does not inherently contains partial_fit we need to call it manually
-            print_shape(err_x, err_y)
-            err_x = pipeline.named_steps['normalization'].fit_transform(err_x)
-            err_x = pipeline.named_steps['dimensionality-reduction-algorithm'].partial_fit(err_x, err_y).transform(err_x)
-            print_shape(err_x, err_y)
-            pipeline.named_steps['classifier'].partial_fit(err_x, err_y, np.unique(y))
+            print_shape(xc, y)
+            xc = pipeline.named_steps['normalization'].fit_transform(xc)
+            xc = pipeline.named_steps['dimensionality-reduction-algorithm'].partial_fit(xc, y).transform(xc)
+            print_shape(xc, y)
+            #It is not recommended to loop 1000 times on data to be drifted as it leads to overfitting. 
+            #However here I do it as an example so that the adaptations become clearly visible.
+            for _ in range(1,1000): 
+                for _xc, _y in zip(xc, y):
+                    pipeline.named_steps['classifier'].partial_fit([_xc], [_y], np.unique(y))
         except AttributeError:
             print("The classifier you use", pipeline.get_params()['steps'][2][1], \
                     "doesn't handle drifting. Use SGDClassifier instead.")
