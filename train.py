@@ -6,6 +6,7 @@ from processing_EEGs_lib.dimensionality_reduction_algorithm import CSPTransforme
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from random import randint
 import sys
@@ -13,11 +14,12 @@ import time
 import joblib
 
 def print_shape(x, y):
-    rand1 = randint(0, x.shape[0]-1)
-    rand2 = randint(0, x.shape[1]-1)
+    rand1 = randint(0, x.shape[0]-1 if x.shape[0]-1 >= 0 else 0)
+    if x.ndim == 2:
+        rand2 = randint(0, x.shape[1]-1 if x.shape[1]-1 >= 0 else 0)
     print("Datas:")
-    print(" x:", x.shape, "| random value: ", x[rand1][rand2])
-    print(" y:", y.shape, "| random value: ", y[rand1])
+    print(" x:", x.shape, "| random value: ", x[rand1] if x.ndim == 1 else x[rand1][rand2])
+    print(" y:", y.shape, "| random value: ", y if y.ndim == 0 else y[rand1])
 
 def print_pipe(pipe):
     print("Pipe steps: ")
@@ -35,12 +37,29 @@ def _continue():
         exit()
     print("")
 
-def preprocessed_data():
+def preprocessed_data(subject=1, task="right-or-left-fist", specific="n"):
     print("\033[92mPREPROCESSING\033[0m")
     x = np.array([])
     y = np.array([])
-    for set_nb in [3, 4, 7, 8, 11, 12]: # By using all the datasets we get 90 examples instead of 15
-        raw_data, annotations = get_data(set_nb)
+    rlf = [3,4,7,8,11,12]
+    ff = [5,6,9,10,13,14]
+    if specific.isnumeric():
+        if (task == "right-or-left-fist" and int(specific) in rlf) or \
+                    (task == "fists-or-feet" and int(specific) in ff):
+            datasets = [int(specific)]
+        else:
+            print("train.py: Error: Specific experiment", specific, "not aligned with task.")
+            exit()
+    else:
+        if task == "right-or-left-fist" and specific == "n":
+            datasets = rlf
+        elif task == "fists-or-feet" and specific == "n":
+            datasets = ff
+        else:
+            print("train.py: Error: task", task, "not found.")
+            exit()
+    for set_nb in datasets: # By using all the datasets we get 90 examples instead of 15
+        raw_data, annotations = get_data(subject, set_nb)
         if x.size == 0:
             x, y = preprocessing_transformation(raw_data, annotations)
         else:
@@ -50,14 +69,17 @@ def preprocessed_data():
         print_shape(x, y)
     return x, y
 
-def split_data(x, y):
+def split_data(x, y, _all=True):
     # Split in 0.6 (training), 0.2 (test), 0.2 (validation)
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, train_size=0.8, shuffle=True)
     # Validation set doesn't need to be cut because sklearn classifiers make the cut themselves
     # or in the case of DecisionTrees validation sets are not even used.
     #x_train, x_validation, y_train, y_validation = train_test_split(x_train, y_train, test_size=0.2, train_size=0.8, 
                                                                     #shuffle=True)
-    return x_train, x_test, y_train, y_test
+    if _all:                                                              
+        return x_train, x_test, y_train, y_test
+    else:
+        return x_train, y_train
 
 def processing(x, y):
     print("\033[92mPROCESSING\033[0m")
@@ -116,6 +138,19 @@ def train_test(x_train, x_test, y_train, y_test, algo):
     #DecisionTrees are clearly the fastest.
     elif algo == "DecisionTree":
         pipe = Pipeline([("classifier", DecisionTreeClassifier(max_depth=3))])
+    #Lastly I added SGD classification because it allows drifting (real time adaptation) when used in 
+    #real-time-datastream-classification.
+    #Without affecting hyperparameters the classifier underfits. Setting penalty to None lowers regularization 
+    #thus overfitting and indeed improves model performance by a couple points.
+    #Setting alpha to zero lowers regularization and thus overfitting, thus improving the underfitted model 
+    #by a couple points. Learning rate and eta0 need to be set manually when alpha=0.
+    #Conclusions from this algorithm is that it does not work well in terms of accuracy on this small dataset where
+    #outliers are of importance. It expects larger datasets and this is why I did not select it from the start. However
+    #it is not slow.
+    #When looking at predictions we can also see a lot of variations in performance with this classifier, 
+    #even when using same training data. This shows how much it expects large training sets.
+    elif algo == "SGD":
+        pipe = Pipeline([("classifier", SGDClassifier(penalty=None, alpha=0, learning_rate='constant', eta0=20.0))])
     else:
         print("train.py: Error: Classification algo", algo, "not found.")
         exit()
@@ -126,9 +161,9 @@ def train_test(x_train, x_test, y_train, y_test, algo):
     score_test = print_score(pipe, x_test, y_test, " test set:")
     return score_train, score_test, pipe.named_steps['classifier']
 
-def main(algo):
-    x, y = preprocessed_data()
-    x, pipeline_steps = processing(x, y)
+def main(algo, subject, task):
+    _x, y = preprocessed_data(subject, task)
+    x, pipeline_steps = processing(_x, y)
     _continue()
     train_scores = []
     test_scores = []
@@ -142,10 +177,11 @@ def main(algo):
         test_scores.append(score_test)
     end_time = time.time()
     print("\033[92mCONCLUSIONS\033[0m")
+    print("Dataset/subject and task:                           ", subject, task)
     print("Classifier algorith:                                ", classifier)
     print("average score over", nb_tests, "experiments of training set:", sum(train_scores)/len(train_scores))
     print("average score over", nb_tests, "experiments of test set:    ", sum(test_scores)/len(test_scores))
-    print("Total execution time in seconds:                    ", end_time-start_time)
+    print("Total execution time in seconds:                    ", "NA" if g_skip else end_time-start_time)
     _continue()
     print("\033[92mCROSS VALIDATION\033[0m")
     #Train and test on 6 different subsets of the data as we concatenated 6 datasets at the start
@@ -158,17 +194,38 @@ def main(algo):
     pipeline_steps.append(("classifier", classifier))
     final_pipeline = Pipeline(pipeline_steps)
     print_pipe(final_pipeline)
+    _x_train, _y_train = split_data(_x, y, _all=False) 
     if input("Do you want to save this pipeline? (y/n) : ") == 'y':
-        print(joblib.dump(final_pipeline, "saved/pipeline.joblib"))
+        save = {
+            "pipeline": final_pipeline,
+            "x_train": _x_train,
+            "y_train": _y_train,
+            "subject": subject,
+            "task": task
+         }
+        print(joblib.dump(save, "saved/pipeline.joblib"))
 
 if __name__ == "__main__":
-    if (len(sys.argv) > 1 and sys.argv[1] == "-s") or (len(sys.argv) > 2 and sys.argv[2] == "-s"):
+    if "-s" in sys.argv:
         g_skip = False
     else:
         g_skip = True
-    if (len(sys.argv) > 1 and sys.argv[1] == "-a") or (len(sys.argv) > 2 and sys.argv[2] == "-a"):
-        algo = input("Select classifier algorithm (DecisionTree, KNN, GradientBoosting) : ")
+    if "-a" in sys.argv:
+        algo = input("Select classifier algorithm (DecisionTree, KNN, GradientBoosting, SGD) : ")
     else:
-        algo = "KNN"
-    main(algo)
+        algo = "DecisionTree"
+    if "-t" in sys.argv:
+        subject = input("Choose subject/dataset (1-109) : ")
+        if not subject.isnumeric():
+            print("train.py: Error: Chosen subject/dataset is not numeric.")
+            exit()
+        subject = int(subject)
+        if subject > 109 or subject < 1:
+            print("train.py: Error: Chosen subject/dataset out of range.")
+            exit()
+        task = input("Choose task (right-or-left-fist/fists-or-feet) : ")
+    else:
+        subject = 1
+        task = "right-or-left-fist"
+    main(algo, subject, task)
 

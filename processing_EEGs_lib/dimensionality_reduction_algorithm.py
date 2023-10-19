@@ -21,8 +21,13 @@ class CSPTransformer(BaseEstimator, TransformerMixin):
         '''
         self.nb_components = nb_components
         self.filters = np.array([])
+        self.x = np.array([])
+        self.y = np.array([])
 
     def fit(self, x, y):
+        if self.x.size == 0:
+            self.x = x
+            self.y = y
         class_labels = np.unique(y)
         if len(class_labels) != 2:
             print("CSPTransformer: Error: CSP is a binary classification method: there should be two class labels.", 
@@ -66,6 +71,11 @@ class CSPTransformer(BaseEstimator, TransformerMixin):
         eigenvectors = eigenvectors[:, descending_indices] #reorder the columns (eigenvectors) of the eigenvectors matrix
         self.filters = eigenvectors[:, :self.nb_components].real.astype(np.float32)
         return self
+    
+    def partial_fit(self, x, y):
+        self.x = np.concatenate((self.x, x), axis=0)
+        self.y = np.concatenate((self.y, y), axis=0)
+        return self.fit(self.x, self.y)
 
     def transform(self, x):
         if self.filters.size == 0:

@@ -9,13 +9,13 @@ import numpy as np
 # Download datasets
 # Learn more about datasets (https://physionet.org/content/eegmmidb/1.0.0/, 
 #           https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#footcite-schalketal2004).
-def get_data(set_nb=3):
+def get_data(folder=1, dataset=3):
     # This returns a list of pathlib.PosixPath objects referring to 14 datasets each describing a different task
-    data_paths = mne.datasets.eegbci.load_data(1, [1,2,3,4,5,6,7,8,9,10,11,12,13,14], path="./datasets", 
+    data_paths = mne.datasets.eegbci.load_data(folder, [1,2,3,4,5,6,7,8,9,10,11,12,13,14], path="./datasets", 
                                 force_update=False, update_path=True, 
                                 base_url='https://physionet.org/files/eegmmidb/1.0.0/', verbose='warning')
     #left_right_fist_datasets = [3, 4, 7, 8, 11, 12] #Use all datasets that describe the same for more training data
-    left_right_fist_datasets = [set_nb] #Concatenation of datasets via mne creates bugs later, use one at a time
+    left_right_fist_datasets = [dataset] #Concatenation of datasets via mne creates bugs later, use one at a time
     raws = [mne.io.read_raw_edf(data_paths[number-1], preload=True, verbose='warning') 
                 for number in left_right_fist_datasets]
     raw_data = mne.io.concatenate_raws(raws)
