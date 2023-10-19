@@ -147,7 +147,7 @@ Both RF and decision trees don't necessitate normalization of data and are not s
 ###### Neural Networks
 Deep learning models like Convolutional Neural Networks (CNNs) or Recurrent Neural Networks (RNNs) can also be applied to EEG data. CNNs can be used to capture spatial features, and RNNs can be applied to time-series EEG data. However, they typically require larger amounts of data and computational resources.
 
-Stochastic-gradient-descend, a technique used in neural-networks, is ideal for incremental self-updating of the model during real-time processing.
+Stochastic-gradient-descend (SGD), a technique used in neural-networks, is ideal for incremental self-updating of the model during real-time processing.
 
 ###### K-Nearest Neighbors (KNN)
 KNN is a simple and interpretable supervised classification algorithm that can be used with CSP-transformed EEG data.
@@ -184,7 +184,8 @@ If it is not precise enough I can try 'Online Gradient Boosting'. Else if it is 
 If speed is still an issue I could try decision trees.
 
 In the end I implemented those three algorithms KNN, GradientBoosting and DecisionTree. DecisionTree achieves across 1000 tests 0.98 mean score on test sets and takes 1.92s to execute them all. KNN as I expected was highly efficient with 0.9975 mean score on test sets over the 1000 tests in 6.59s. GradientBoosting was way slower with 43s time for 0.98 mean score.<br>
-Contrary to conventional practice I had to keep outliers in the training data to achieve any predictive power.
+Contrary to conventional practice I had to keep outliers in the training data to achieve any predictive power.<br>
+Lastly for real-time-data-classification-drifting I had to implement the SGD classifier. SGD expects larger datasets and thus as expected it performed poorly in terms of accuracy on this dataset. However its speed was relatively good and sklearn's SGDClassifier contains the 'partial_fit' method allowing drifting. 
 
 ### Deployment
 
