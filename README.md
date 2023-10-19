@@ -9,7 +9,19 @@ Learn more by reading this README and expanded comments in code.
 ## Use
 
 Compile with **python3.9**.
-
+```
+#Visualize data preprocessing with flag '-v'.
+python3.9 processing_EEGs_lib/preprocessing.py -v
+#Train model with preprocessed data.
+#Optionally use flag '-s' to skip prompts and test classifier for speed.
+#Optionally use flag '-a' to choose classifier algorithm.
+#Optionally use flag '-t' to choose subject/dataset and task.
+python3.9 train.py -s
+#Predict from simulated data stream and optionally drift
+#Optionally use flag '-s' to skip prompts.
+#Optionally use flag '-t' to choose subject/dataset, task and optionally specific experiment.
+python3.9 predict.py -s
+```
 Optionally use flag **-v** for plot visualization.
 
 ## Preliminary Notions
