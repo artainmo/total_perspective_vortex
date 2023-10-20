@@ -20,7 +20,7 @@ Optionally use flag '-s' to skip prompts and test classifier for speed.<br>
 Optionally use flag '-a' to choose classifier algorithm.<br>
 Optionally use flag '-t' to choose subject/dataset and task.<br>
 
-Predict from simulated data stream and optionally drift.
+Predict from simulated live data stream and optionally drift.
 ```
 python3.9 predict.py -s
 ```
