@@ -39,7 +39,7 @@ ML workflows include data preparation, training and evaluation. ML pipelines aut
 
 ### Real time data stream classification
 
-Consists of a classifier that is trained in real time on incoming data and able to drift (adapt in real time), to stay accurate over time.
+Consists of a classifier that predicts in real time on incoming data and is able to drift (adapt in real time), to stay accurate over time.
 
 ### MNE
 
