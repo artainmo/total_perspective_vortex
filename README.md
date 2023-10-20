@@ -2,8 +2,8 @@
 
 42 school [subject](https://cdn.intra.42.fr/pdf/pdf/86321/en.subject.pdf).
 
-Process EEG datas by cleaning, extracting, creating a ML pipeline implementing a dimensionality reduction algorithm before classifying and handling a real time data-stream with sklearn.
-
+Process EEG datas by cleaning, extracting, creating a ML pipeline implementing a dimensionality reduction algorithm before classifying and handling a real time data-stream with sklearn.<br>
+Also contains some associated notes from studying.<br>
 Learn more by reading this README and expanded comments in code.
 
 ## Use
