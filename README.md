@@ -189,8 +189,7 @@ Lastly for real-time-data-classification-drifting I had to implement the SGD cla
 
 ### Deployment
 
-The final stage is applying the ML model to the production area allowing users to get pedictions on live data.<br>
-Here, [real time data stream classification](#Real-time-data-stream-classification) can also be applied so that the model can keep learning in real time.
+The final stage is applying the ML model to the production area allowing users to get pedictions on live data and classifiers to keep learning via [real time data stream classification](#Real-time-data-stream-classification).<br>
 
 # Resources
 
